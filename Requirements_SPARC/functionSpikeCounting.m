@@ -86,7 +86,7 @@ plot(time,dataB);
 %line([time(1) time(length(time))],[noise_pkpk_B noise_pkpk_B],'Color','k','LineWidth',2);
 xlabel('Time (s)')
 ylabel('ENG (\muV)')
-title('Spikes Identified by Cluster for B Channel')
+title('Prefiltered B Channel')
 
 dataA_band_figurename = regexprep(ENG_in, '.mat', '_preFilt_spikes');
 %savefig(Name2); 
@@ -99,7 +99,7 @@ plot(time,dataC);
 %line([time(1) time(length(time))],[noise_pkpk_C noise_pkpk_C],'Color','k','LineWidth',2);
 xlabel('Time (s)')
 ylabel('ENG (\muV)')
-title('Spikes Identified by Cluster for C Channel')
+title('Prefiltered C Channel')
 
 dataB_rate_figurename = regexprep(ENGc_in, '.mat', '_preFilt_spikes');
 %savefig(Name3); 
