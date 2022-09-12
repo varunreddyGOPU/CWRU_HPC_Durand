@@ -58,9 +58,9 @@ else
 end
 
 for i = 1:vals
-    fprintf(fid, '%s\n', rms_min(i));
-    fprintf(fid, '%s\n', j_best_min(i));
-    fprintf(fid, '%s\n', t_best_min(i));
+    fprintf(fid, '%s\n', "RMS: "+compose("%9.7f",rms_min(i)));
+    fprintf(fid, '%s\n', "Index: "+ compose("%9.7f",j_best_min(i)));
+    fprintf(fid, '%s\n', "Time: "+ compose("%9.7f",t_best_min(i)));
 end
 
 % Calculate RMS average for all three and multiply by 10.5:
