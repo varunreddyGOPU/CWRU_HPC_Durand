@@ -1,6 +1,6 @@
 function mean_rms = functionRMS_Auto(data1)
 
-% Written by Aaron Rodrigues 11.7.21 - 3.10.22
+% Written by Aaron Rodrigues 11.7.21 - 9.28.22
 % For outputs of read_Intan_RHD2000_file.m
 
 data10=load(data1);
@@ -8,48 +8,57 @@ data1cell=struct2cell(data10);
 datamat1=cell2mat(data1cell(1:1));
 
 %datamat1=load(data1);
-
 %Fs = data10.samplerate (1,1);
-Fs=20000;
-%%
-data_squared = datamat1.^2;
+
+Fs= 20000;
+
+dataSquared = datamat1.^2;
 len = length(datamat1);
 T_0 = len/Fs;
 t = (1:len)./Fs;
-%%
-numSections = 10;
-window = Fs/5;%Fs/4;
-overlap = 0;%-Fs/4;%-Fs; % Window > overlap, lower overlap -> faster runtime
+
+numSections = 1;
+windowSeconds = 10 % Length of window in seconds
+window = Fs*windowSeconds;
+
+n = numSections;
+
+% Overlap is the amount that windows will overlap each other; lower overlap -> faster runtime
+% To add space between windows: Try -Fs/4 or -Fs;
+overlap = (3/4) * window;
+% Ensure window > overlap, 
+overlap = min([overlap, window]) 
 
 % In each region, find the subregion of length window with the lowest RMS
 for i = 1:numSections
     rmsVals(i) = realmax;
-    j_best(i) = 0;
+    iLowest(i) = 0;
+	% Iterate over all possible windows within a section
     for j = (1+(i-1)*len/numSections):(window-overlap):((i)*len/numSections - window)
-        rms_temp = sqrt(mean(data_squared(j:j+window)));
-        if(rms_temp < rmsVals(i))
-            rmsVals(i) = rms_temp;
-            j_best(i) = j;
+        rmsTemp = sqrt(mean(dataSquared(j:j+window)));
+        if(rmsTemp < rmsVals(i))
+            rmsVals(i) = rmsTemp;
+            iLowest(i) = j;
         end
     end
 end
 
-t_best = j_best./Fs;
+tLowest = iLowest./Fs;
 
 %%
 % Print the power of each:
-[rms_sorted, index_rms] = sort(rmsVals,'ascend');
+[rmsSorted, rmsIndex] = sort(rmsVals,'ascend');
 
-vals = 3;
-% Pick 3 lowest ("best") RMS values, use for analysis
-% Assumes that there will be at least 3 regions with a quiet subregion
-for i = 2:vals+1
-    rms_min(i-1) = rmsVals(index_rms(i));
-    j_best_min(i-1) = j_best(index_rms(i));
-    t_best_min(i-1) = t_best(index_rms(i));
+% Pick n lowest ("best") RMS values, use for analysis
+% Assumes that there will be at least n regions with a quiet subregion
+for i = 1:n
+    rmsMin(i) = rmsVals(rmsIndex(i));
+    iMin(i) = iLowest(rmsIndex(i));
+    tMin(i) = tLowest(rmsIndex(i));
 end
-%%
-if (rms_sorted(1)*100 < rms_sorted(vals)) 
+
+%% Add note if output has a high variance
+if (rmsSorted(1)*100 < rmsSorted(n)) 
     resultsName = regexprep(data1, '.mat', '_CHECK_results.txt')
 	fid = fopen( resultsName, 'wt' );
 else
@@ -57,15 +66,13 @@ else
     fid = fopen( resultsName, 'wt' );
 end
 
-for i = 1:vals
-    fprintf(fid, '%s\n', "RMS: "+compose("%9.7f",rms_min(i)));
-    fprintf(fid, '%s\n', "Index: "+ compose("%9.7f",j_best_min(i)));
-    fprintf(fid, '%s\n', "Time: "+ compose("%9.7f",t_best_min(i)));
+for i = 1:n
+    fprintf(fid, '%s\n', "RMS: " + compose("%9.7f",rmsMin(i)));
+    fprintf(fid, '%s\n', "Index: " + int2str(iMin(i)));
+    fprintf(fid, '%s\n', "Time: " + compose("%9.7f",tMin(i)));
 end
 
-% Calculate RMS average for all three and multiply by 10.5:
-mean_rms = mean(rms_min)
-noise_pkpk = mean_rms * 4.5 %3.3 * 2.5 * 3.7 * 0.95% 3 * 3.5 ; 3.3 * 2.5
+mean_rms = mean(rmsMin)
 
 fprintf(fid, '%s\n', mean_rms);
 fclose(fid);
