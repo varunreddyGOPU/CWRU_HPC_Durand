@@ -23,7 +23,7 @@ rclone copy box:"$filePath_" "$(pwd)"
 
 module load matlab
 
-matlab -nosplash -noFigureWindows -r "addpath('"$reqPath"'); fxn_intan_script_CWRU4_miniboard_2CH_Diff('$name'); clear all; close all; rms_dataC=functionRMS_Auto('$genName"_dataC_filt.mat"'); rms_dataB=functionRMS_Auto('$genName"_dataB_filt.mat"'); quit"
+matlab -nosplash -noFigureWindows -r "addpath('"$reqPath"'); fxn_intan_script_CWRU4_miniboard_2CH_Diff('$name'); clear all; close all; rms_dataC=functionRMS_Auto('$name', '_dataC_filt.mat'); rms_dataB=functionRMS_Auto('$name', '_dataB_filt.mat'); quit"
 
 rm progress.sbatch
 rm *.rhd

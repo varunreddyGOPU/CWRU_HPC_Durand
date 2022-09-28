@@ -1,7 +1,9 @@
-function mean_rms = functionRMS_Auto(data1)
+function rmsMean = functionRMS_Auto(Ref_Exp, tag)
 
 % Written by Aaron Rodrigues 11.7.21 - 9.28.22
 % For outputs of read_Intan_RHD2000_file.m
+
+data1 = regexprep(Ref_Exp, '.rhd', tag)
 
 data10=load(data1);
 data1cell=struct2cell(data10);
@@ -24,8 +26,8 @@ window = Fs*windowSeconds;
 n = numSections;
 
 % Overlap is the amount that windows will overlap each other; lower overlap -> faster runtime
-% To add space between windows: Try -Fs/4 or -Fs;
-overlap = (3/4) * window;
+% To add space between windows: Try -Fs/4 or -Fs
+overlap = (9/10) * window;
 % Ensure window > overlap, 
 overlap = min([overlap, window]) 
 
@@ -72,15 +74,15 @@ for i = 1:n
     fprintf(fid, '%s\n', "Time: " + compose("%9.7f",tMin(i)));
 end
 
-mean_rms = mean(rmsMin)
+rmsMean = mean(rmsMin)
 
-fprintf(fid, '%s\n', mean_rms);
+fprintf(fid, '%s\n', rmsMean);
 fclose(fid);
 
 threshName = regexprep(data1, '.mat', '_noiseRMS.txt')
 
 fid2 = fopen( threshName, 'wt' );
-fprintf(fid2, '%s\n', num2str(mean_rms));
+fprintf(fid2, '%s\n', compose("%9.7f",rmsMean));
 fclose(fid2);
 
 return;
