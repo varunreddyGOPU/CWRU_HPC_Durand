@@ -10,7 +10,7 @@
 
 module load rclone
 
-dataDir="SPARC_Project_Copy/Recording_Data/Chronic_Implants/VNKA/VN091818"
+dataDir="SPARC_Project_Copy/Recording_Data/Chronic_Implants/VNKA/sub-VN091818"
 
 # Get an array of partial paths to each .rhd file in dataDir
 dataFiles=$(rclone lsf -R --absolute --files-only --include "*.rhd" box:"$dataDir")

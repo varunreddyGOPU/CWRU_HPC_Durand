@@ -8,7 +8,7 @@
 #SBATCH --mail-type=ALL 
 #SBATCH --job-name="intan_job" 
 
-dataDir="SPARC_Project_Copy/Recording_Data/Chronic_Implants/VNKA/VN091818"
+dataDir="SPARC_Project_Copy/Recording_Data/Chronic_Implants/VNKA/sub-VN091818"
 
 curDir=$(pwd)
 req="$curDir/Requirements_SPARC"
